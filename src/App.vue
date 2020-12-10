@@ -1,16 +1,41 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+    <div id="wrapper" v-if="!isLoginPage">
+      <Sidebar></Sidebar>
+      <router-view />
     </div>
-    <router-view/>
+    <router-view v-else />
   </div>
 </template>
 
+<script>
+import Sidebar from "./components/Sidebar.vue";
+export default {
+  components: { Sidebar: Sidebar },
+  data() {
+    return {
+      isLoginPage: true,
+    };
+  },
+  created() {
+    this.checkRouter();
+  },
+  beforeUpdate() {
+    this.checkRouter();
+  },
+  methods: {
+    checkRouter() {
+      this.isLoginPage =
+        this.$router.history.current.name === "login" ||
+        this.$router.history.current.name === "Home";
+    },
+  },
+};
+</script>
+
 <style lang="scss">
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: Nunito, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
@@ -28,5 +53,9 @@
       color: #42b983;
     }
   }
+}
+
+a:hover {
+  text-decoration: none;
 }
 </style>
