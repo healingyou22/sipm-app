@@ -19,6 +19,20 @@ export default {
   },
   created() {
     this.checkRouter();
+
+    console.log(Notification.permission);
+
+    if (Notification.permission === "granted") {
+      // showNotification();
+      console.log(Notification.permission);
+    } else if (Notification.permission !== "denied") {
+      Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+          // showNotification();
+          console.log(Notification.permission);
+        }
+      });
+    }
   },
   beforeUpdate() {
     this.checkRouter();

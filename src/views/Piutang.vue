@@ -247,6 +247,7 @@ export default {
       user: {},
       checkUser: "",
       caridate: "",
+      date: new Date(),
     };
   },
   methods: {
@@ -275,17 +276,40 @@ export default {
     errorData(error) {
       console.log(error);
     },
+    notifications() {
+      const db = firebase.database().ref("notifications");
+
+      var data = {
+        user: firebase.auth().currentUser.email,
+        message: "Telah menghapus laporan piutang",
+        time: this.date.toLocaleTimeString(),
+        date: this.date.toLocaleDateString(),
+      };
+
+      return db.push(data);
+    },
     removeData(id) {
       if (this.checkUser === "manager@admin.com") {
-        firebase
-          .database()
-          .ref("piutang/" + id)
-          .remove();
         swal({
-          title: "Selamat",
-          text: "Data berhasil dihapus!",
-          icon: "success",
-          button: "Ok",
+          title: "Apakah Yakin Ingin Menghapus Data Ini?",
+          text: "Data Tidak Dapat Kembali Setelah Dihapus!",
+          icon: "warning",
+          buttons: true,
+          dangerMode: true,
+        }).then((willDelete) => {
+          if (willDelete) {
+            firebase
+              .database()
+              .ref("piutang/" + id)
+              .remove();
+            swal("Data Telah Berhasil Dihapus!", {
+              icon: "success",
+            });
+            this.notifications();
+            this.showNotification();
+          } else {
+            swal("Data Batal Untuk Dihapus!");
+          }
         });
       } else {
         swal({
@@ -327,6 +351,15 @@ export default {
           };
           this.piutang.push(data);
         });
+    },
+    showNotification() {
+      const notification = new Notification(firebase.auth().currentUser.email, {
+        body: "Telah menghapus laporan piutang " + this.date.toLocaleString(),
+      });
+
+      notification.onclick = () => {
+        this.$router.push({ name: "HistoryNotification" });
+      };
     },
   },
 };

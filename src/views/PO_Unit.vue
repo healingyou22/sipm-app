@@ -105,15 +105,14 @@
                           :id="`warna-${index}`"
                           v-model="input[index - 1].warna"
                         >
-                          <option value="Warna1">Warna1</option>
-                          <option value="Warna1">Warna1</option>
-                          <option value="Warna1">Warna1</option>
-                          <option value="Warna1">Warna1</option>
-                          <option value="Warna1">Warna1</option>
-                          <option value="Warna1">Warna1</option>
-                          <option value="Warna1">Warna1</option>
-                          <option value="Warna1">Warna1</option>
-                          <option value="Warna1">Warna1</option>
+                          <option value="SILVER">SILVER</option>
+                          <option value="MERAH HITAM">MERAH HITAM</option>
+                          <option value="BIRU HITAM">BIRU HITAM</option>
+                          <option value="PUTIH BIRU">PUTIH BIRU</option>
+                          <option value="BIRU">BIRU</option>
+                          <option value="HITAM KUNING">HITAM KUNING</option>
+                          <option value="HITAM">HITAM</option>
+                          <option value="MERAH">MERAH</option>
                         </select>
                       </div>
                     </div>
@@ -146,19 +145,6 @@
                     <div class="mb-3 row">
                       <label class="col-sm-2 col-form-label">Harga</label>
                       <div class="col-sm-10">
-                        <input
-                          type="number"
-                          class="form-control"
-                          required
-                          :placeholder="`harga-${index}`"
-                          :id="`harga-${index}`"
-                          v-model="input[index - 1].harga"
-                        />
-                      </div>
-                    </div>
-                    <!-- <div class="mb-3 row">
-                      <label class="col-sm-2 col-form-label">Harga</label>
-                      <div class="col-sm-10">
                         <select
                           class="form-control"
                           aria-label="Default select example"
@@ -166,18 +152,16 @@
                           :id="`harga-${index}`"
                           v-model="input[index - 1].harga"
                         >
-                          <option value="Harga1">Harga1</option>
-                          <option value="Harga1">Harga1</option>
-                          <option value="Harga1">Harga1</option>
-                          <option value="Harga1">Harga1</option>
-                          <option value="Harga1">Harga1</option>
-                          <option value="Harga1">Harga1</option>
-                          <option value="Harga1">Harga1</option>
-                          <option value="Harga1">Harga1</option>
-                          <option value="Harga1">Harga1</option>
+                          <option value="12444600">Rp 12.444.600,-</option>
+                          <option value="13149000">Rp 13.149.000,-</option>
+                          <option value="20439150">Rp 20.439.150,-</option>
+                          <option value="21703000">Rp 21.703.000,-</option>
+                          <option value="22262000">Rp 22.262.000,-</option>
+                          <option value="24826000">Rp 24.826.000,-</option>
+                          <option value="28599000">Rp 28.599.000,-</option>
                         </select>
                       </div>
-                    </div> -->
+                    </div> 
                     <!-- <div class="mb-3 row">
                       <label class="col-sm-2 col-form-label">Total</label>
                       <div class="col-sm-10">

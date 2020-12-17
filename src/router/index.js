@@ -19,6 +19,7 @@ import UpdateUnit from '../components/Warehouse/UpdateUnit.vue'
 import UpdateTransaksi from '../components/Transaksi/UpdateTransaksi.vue'
 import MutasiUnit from '../views/MutasiUnit.vue'
 import UpdateMutasiUnit from '../components/MutasiUnit/UpdateMutasiUnit'
+import HistoryNotification from '../views/HistoryNotification'
 import firebase from "firebase";
 import swal from "sweetalert";
 require("firebase/auth");
@@ -327,6 +328,12 @@ const routes = [
         }
     })
     }
+  },
+  {
+    path: '/history_notification',
+    name: 'HistoryNotification',
+    component: HistoryNotification,
+    meta: {requiresAuth: true},
   },
   {
     path: '/about',

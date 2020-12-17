@@ -36,12 +36,14 @@
                         >Jenis Penjualan</label
                       >
                       <div class="col-sm-10">
-                        <input
-                          type="text"
+                        <select
                           class="form-control"
-                          required
+                          aria-label="Default select example"
                           v-model="transaksi.penjualan_jenis"
-                        />
+                        >
+                          <option value="REGULAR">REGULAR</option>
+                          <option value="INSTANSI">INSTANSI</option>
+                        </select>
                       </div>
                     </div>
                     <div class="mb-3 row">
@@ -73,12 +75,17 @@
                     <div class="mb-3 row">
                       <label class="col-sm-2 col-form-label">Leasing</label>
                       <div class="col-sm-10">
-                        <input
-                          type="text"
+                        <select
                           class="form-control"
-                          required
+                          aria-label="Default select example"
                           v-model="transaksi.leasing"
-                        />
+                        >
+                          <option value="SFI">SFI</option>
+                          <option value="CK">CK</option>
+                          <option value="ADIRA">ADIRA</option>
+                          <option value="OFF">OFF</option>
+                          <option value="TANPA LEASING">TANPA LEASING</option>
+                        </select>
                       </div>
                     </div>
                     <div class="mb-3 row">
@@ -232,6 +239,7 @@
                         type="button"
                         @click="
                           insertData();
+                          notifications();
                           pressed();
                         "
                       >
@@ -278,6 +286,7 @@ export default {
   data() {
     return {
       transaksi: [],
+      date: new Date(),
     };
   },
   computed: {
@@ -298,6 +307,19 @@ export default {
   methods: {
     back() {
       this.$router.back();
+    },
+    //notifikasi ketika berhasil, dimasukkan ke db
+    notifications() {
+      const db = firebase.database().ref("notifications");
+
+      var data = {
+        user: firebase.auth().currentUser.email,
+        message: "Telah menambahkan data transaksi",
+        time: this.date.toLocaleTimeString(),
+        date: this.date.toLocaleDateString(),
+      };
+
+      return db.push(data);
     },
     insertData() {
       const db = firebase.database().ref("transaksi");
@@ -326,7 +348,8 @@ export default {
 
       this.transaksi = [];
 
-      return db.push(data);
+      db.push(data);
+      this.showNotification();
     },
 
     async pressed() {
@@ -338,6 +361,16 @@ export default {
       });
 
       this.$router.push({ name: "Transaksi" });
+    },
+    //munculin notifikasi di windows
+    showNotification() {
+      const notification = new Notification(firebase.auth().currentUser.email, {
+        body: "Telah menambahkan data transaksi " + this.date.toLocaleString(),
+      });
+
+      notification.onclick = () => {
+        this.$router.push({ name: "HistoryNotification" });
+      };
     },
   },
 };

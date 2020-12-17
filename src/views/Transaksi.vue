@@ -86,7 +86,9 @@
                         <th>{{ index + 1 }}</th>
                         <th>{{ data.tgl_transaksi }}</th>
                         <th>{{ data.penjualan_jenis }}</th>
-                        <th class="text-left">{{ data.nama_cust }}</th>
+                        <th class="text-left" width="100px">
+                          {{ data.nama_cust }}
+                        </th>
                         <th>{{ data.leasing }}</th>
                         <th>{{ data.unit_type }}</th>
                         <th>{{ data.jml_unit }}</th>
@@ -115,7 +117,6 @@
                               />
                             </svg>
                           </button>
-
                           <button
                             class="btn btn-danger btn-sm"
                             type="button"
@@ -140,7 +141,6 @@
                               />
                             </svg>
                           </button>
-
                           <button
                             class="btn btn-primary btn-sm"
                             type="button"
@@ -231,6 +231,7 @@ export default {
       }
       this.checkUser = user.email;
     });
+
     const db = firebase.database().ref("transaksi");
     db.on("value", this.resultData, this.errorData);
   },
@@ -243,7 +244,8 @@ export default {
       transaksi_id: "",
       user: {},
       checkUser: "",
-      caridate: ""
+      caridate: "",
+      date: new Date(),
     };
   },
   methods: {
@@ -270,17 +272,40 @@ export default {
     errorData(error) {
       console.log(error);
     },
+    notifications() {
+      const db = firebase.database().ref("notifications");
+
+      var data = {
+        user: firebase.auth().currentUser.email,
+        message: "Telah menghapus data transaksi",
+        time: this.date.toLocaleTimeString(),
+        date: this.date.toLocaleDateString(),
+      };
+
+      return db.push(data);
+    },
     removeData(id) {
       if (this.checkUser === "sales_counter@admin.com") {
-        firebase
-          .database()
-          .ref("transaksi/" + id)
-          .remove();
         swal({
-          title: "Selamat",
-          text: "Data berhasil dihapus!",
-          icon: "success",
-          button: "Ok",
+          title: "Apakah Yakin Ingin Menghapus Data Ini?",
+          text: "Data Tidak Dapat Kembali Setelah Dihapus!",
+          icon: "warning",
+          buttons: true,
+          dangerMode: true,
+        }).then((willDelete) => {
+          if (willDelete) {
+            firebase
+              .database()
+              .ref("transaksi/" + id)
+              .remove();
+            swal("Data Telah Berhasil Dihapus!", {
+              icon: "success",
+            });
+            this.notifications();
+            this.showNotification();
+          } else {
+            swal("Data Batal Untuk Dihapus!");
+          }
         });
       } else {
         swal({
@@ -305,20 +330,31 @@ export default {
       const db = firebase.database().ref("transaksi");
       this.transaksi = [];
 
-      db.orderByChild("tgl_transaksi").equalTo(this.caridate).on("child_added", (item) => {
-        let data = {
-          id: item.key,
-          tgl_transaksi: item.val().tgl_transaksi,
-          penjualan_jenis: item.val().penjualan_jenis,
-          nama_cust: item.val().nama_cust,
-          leasing: item.val().leasing,
-          unit_type: item.val().unit_type,
-          jml_unit: item.val().jml_unit,
-          payment: item.val().payment,
-        };
-        this.transaksi.push(data);
-      })
-    }
+      db.orderByChild("tgl_transaksi")
+        .equalTo(this.caridate)
+        .on("child_added", (item) => {
+          let data = {
+            id: item.key,
+            tgl_transaksi: item.val().tgl_transaksi,
+            penjualan_jenis: item.val().penjualan_jenis,
+            nama_cust: item.val().nama_cust,
+            leasing: item.val().leasing,
+            unit_type: item.val().unit_type,
+            jml_unit: item.val().jml_unit,
+            payment: item.val().payment,
+          };
+          this.transaksi.push(data);
+        });
+    },
+    showNotification() {
+      const notification = new Notification(firebase.auth().currentUser.email, {
+        body: "Telah menghapus data transaksi " + this.date.toLocaleString(),
+      });
+
+      notification.onclick = () => {
+        this.$router.push({ name: "HistoryNotification" });
+      };
+    },
   },
 };
 </script>

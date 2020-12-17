@@ -89,7 +89,9 @@
                         <th>{{ index + 1 }}</th>
                         <th>{{ data.tgl_pembelian }}</th>
                         <th>{{ data.unit_dibeli }}</th>
-                        <th>{{ data.nama_pembeli2 }}</th>
+                        <th class="text-left" width="200px">
+                          {{ data.nama_pembeli2 }}
+                        </th>
                         <th>{{ data.jml_unit_beli }}</th>
                         <th>{{ data.SPF }}</th>
                         <th>{{ data.harga_beli }}</th>
@@ -247,6 +249,7 @@ export default {
       user: {},
       checkUser: "",
       caridate: "",
+      date: new Date(),
     };
   },
   methods: {
@@ -273,17 +276,40 @@ export default {
     errorData(error) {
       console.log(error);
     },
+    notifications() {
+      const db = firebase.database().ref("notifications");
+
+      var data = {
+        user: firebase.auth().currentUser.email,
+        message: "Telah menghapus laporan pembelian",
+        time: this.date.toLocaleTimeString(),
+        date: this.date.toLocaleDateString(),
+      };
+
+      return db.push(data);
+    },
     removeData(id) {
       if (this.checkUser === "manager@admin.com") {
-        firebase
-          .database()
-          .ref("pembelian/" + id)
-          .remove();
         swal({
-          title: "Selamat",
-          text: "Data berhasil dihapus!",
-          icon: "success",
-          button: "Ok",
+          title: "Apakah Yakin Ingin Menghapus Data Ini?",
+          text: "Data Tidak Dapat Kembali Setelah Dihapus!",
+          icon: "warning",
+          buttons: true,
+          dangerMode: true,
+        }).then((willDelete) => {
+          if (willDelete) {
+            firebase
+              .database()
+              .ref("pembelian/" + id)
+              .remove();
+            swal("Data Telah Berhasil Dihapus!", {
+              icon: "success",
+            });
+            this.notifications();
+            this.showNotification();
+          } else {
+            swal("Data Batal Untuk Dihapus!");
+          }
         });
       } else {
         swal({
@@ -323,6 +349,15 @@ export default {
           };
           this.pembelian.push(data);
         });
+    },
+    showNotification() {
+      const notification = new Notification(firebase.auth().currentUser.email, {
+        body: "Telah menghapus laporan pembelian " + this.date.toLocaleString(),
+      });
+
+      notification.onclick = () => {
+        this.$router.push({ name: "HistoryNotification" });
+      };
     },
   },
 };

@@ -239,11 +239,24 @@ export default {
     return {
       id: this.$route.params.id,
       piutang: {},
+      date: new Date(),
     };
   },
   methods: {
     back() {
       this.$router.back();
+    },
+    notifications() {
+      const db = firebase.database().ref("notifications");
+
+      var data = {
+        user: firebase.auth().currentUser.email,
+        message: "Telah melakukan update laporan piutang",
+        time: this.date.toLocaleTimeString(),
+        date: this.date.toLocaleDateString(),
+      };
+
+      return db.push(data);
     },
     updateData() {
       const db = firebase.database().ref("piutang/" + this.id);
@@ -269,8 +282,20 @@ export default {
         icon: "success",
         button: "Ok",
       });
-
+      this.notifications();
       this.$router.push({ name: "Piutang" });
+      this.showNotification();
+    },
+    showNotification() {
+      const notification = new Notification(firebase.auth().currentUser.email, {
+        body:
+          "Telah melakukan update laporan piutang " +
+          this.date.toLocaleString(),
+      });
+
+      notification.onclick = () => {
+        this.$router.push({ name: "HistoryNotification" });
+      };
     },
   },
 };

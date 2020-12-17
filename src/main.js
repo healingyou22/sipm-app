@@ -40,4 +40,24 @@ firebase.auth().onAuthStateChanged(user=> {
   }
 })
 
+// function showNotification() {
+//   const notification = new Notification("New message from dcode!", {
+//     body: "Hey mate, how are ya? You want to catch up soon?"
+//   });
 
+//   notification.onclick = () => {
+//     window.location.href = "https://google.com"
+//   }
+// }
+
+console.log(Notification.permission)
+
+// if (Notification.permission === "granted") {
+//   showNotification();
+// } else if (Notification.permission !== "denied") {
+//   Notification.requestPermission().then(permission => {
+//     if (permission === "granted") {
+//       showNotification();
+//     }
+//   })
+// }

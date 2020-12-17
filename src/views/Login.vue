@@ -75,6 +75,24 @@ export default {
         console.log(err);
       }
     },
+    // fcmPermission() {
+    //   var fcm = firebase.messaging();
+    //   var db = firebase.database();
+    //   var auth = firebase.auth();
+
+    //   fcm
+    //     .requestPermission()
+    //     .then(() => fcm.getToken())
+    //     .then((token) => {
+    //       console.log(token);
+
+    //       db.ref("/tokens").push({
+    //         token: token,
+    //         uid: auth.currentUser.uid,
+    //       });
+    //     })
+    //     .catch(() => console.log("user didnt give permission"));
+    // },
   },
 };
 </script>

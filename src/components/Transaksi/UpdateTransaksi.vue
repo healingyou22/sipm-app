@@ -36,12 +36,14 @@
                         >Jenis Penjualan</label
                       >
                       <div class="col-sm-10">
-                        <input
-                          type="text"
+                        <select
                           class="form-control"
-                          required
+                          aria-label="Default select example"
                           v-model="transaksi.penjualan_jenis"
-                        />
+                        >
+                          <option value="REGULAR">REGULAR</option>
+                          <option value="INSTANSI">INSTANSI</option>
+                        </select>
                       </div>
                     </div>
                     <div class="mb-3 row">
@@ -73,12 +75,17 @@
                     <div class="mb-3 row">
                       <label class="col-sm-2 col-form-label">Leasing</label>
                       <div class="col-sm-10">
-                        <input
-                          type="text"
+                        <select
                           class="form-control"
-                          required
+                          aria-label="Default select example"
                           v-model="transaksi.leasing"
-                        />
+                        >
+                          <option value="SFI">SFI</option>
+                          <option value="CK">CK</option>
+                          <option value="ADIRA">ADIRA</option>
+                          <option value="OFF">OFF</option>
+                          <option value="TANPA LEASING">TANPA LEASING</option>
+                        </select>
                       </div>
                     </div>
                     <div class="mb-3 row">
@@ -295,6 +302,7 @@ export default {
     return {
       id: this.$route.params.id,
       transaksi: {},
+      date: new Date(),
     };
   },
   computed: {
@@ -315,6 +323,18 @@ export default {
   methods: {
     back() {
       this.$router.back();
+    },
+    notifications() {
+      const db = firebase.database().ref("notifications");
+
+      var data = {
+        user: firebase.auth().currentUser.email,
+        message: "Telah melakukan update data transaksi",
+        time: this.date.toLocaleTimeString(),
+        date: this.date.toLocaleDateString(),
+      };
+
+      return db.push(data);
     },
     updateData() {
       const db = firebase.database().ref("transaksi/" + this.id);
@@ -348,7 +368,20 @@ export default {
         button: "Ok",
       });
 
+      this.notifications();
       this.$router.push({ name: "Transaksi" });
+      this.showNotification();
+    },
+
+    showNotification() {
+      const notification = new Notification(firebase.auth().currentUser.email, {
+        body:
+          "Telah melakukan update data transaksi " + this.date.toLocaleString(),
+      });
+
+      notification.onclick = () => {
+        this.$router.push({ name: "HistoryNotification" });
+      };
     },
   },
 };

@@ -13,7 +13,7 @@
             <div class="col-12">
               <div class="card">
                 <div class="card-header text-white bg-dark">
-                  <h3 class="card-title text-left">Tambah Unit</h3>
+                  <h3 class="card-title text-left">Tambah Laporan Unit</h3>
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body text-black text-left">
@@ -57,15 +57,14 @@
                           aria-label="Default select example"
                           v-model="warehouse.unit_warna"
                         >
-                          <option value="Warna1">Warna1</option>
-                          <option value="Warna1">Warna1</option>
-                          <option value="Warna1">Warna1</option>
-                          <option value="Warna1">Warna1</option>
-                          <option value="Warna1">Warna1</option>
-                          <option value="Warna1">Warna1</option>
-                          <option value="Warna1">Warna1</option>
-                          <option value="Warna1">Warna1</option>
-                          <option value="Warna1">Warna1</option>
+                          <option value="SILVER">SILVER</option>
+                          <option value="MERAH HITAM">MERAH HITAM</option>
+                          <option value="BIRU HITAM">BIRU HITAM</option>
+                          <option value="PUTIH BIRU">PUTIH BIRU</option>
+                          <option value="BIRU">BIRU</option>
+                          <option value="HITAM KUNING">HITAM KUNING</option>
+                          <option value="HITAM">HITAM</option>
+                          <option value="MERAH">MERAH</option>
                         </select>
                       </div>
                     </div>
@@ -199,9 +198,31 @@ export default {
   data() {
     return {
       warehouse: [],
+      date: new Date(),
     };
   },
   methods: {
+    showNotification() {
+      const notification = new Notification(firebase.auth().currentUser.email, {
+        body: "Telah menambahkan laporan unit " + this.date.toLocaleString(),
+      });
+
+      notification.onclick = () => {
+        this.$router.push({ name: "HistoryNotification" });
+      };
+    },
+    notifications() {
+      const db = firebase.database().ref("notifications");
+
+      var data = {
+        user: firebase.auth().currentUser.email,
+        message: "Telah menambahkan laporan unit",
+        time: this.date.toLocaleTimeString(),
+        date: this.date.toLocaleDateString(),
+      };
+
+      return db.push(data);
+    },
     back() {
       this.$router.back();
     },
@@ -222,7 +243,9 @@ export default {
 
       this.warehouse = [];
 
-      return db.push(data);
+      db.push(data);
+      this.notifications();
+      this.showNotification();
     },
 
     async pressed() {

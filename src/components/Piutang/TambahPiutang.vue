@@ -219,11 +219,25 @@ export default {
   data() {
     return {
       piutang: [],
+      date: new Date(),
     };
   },
   methods: {
     back() {
       this.$router.back();
+    },
+    //notifikasi ketika berhasil, dimasukkan ke db
+    notifications() {
+      const db = firebase.database().ref("notifications");
+
+      var data = {
+        user: firebase.auth().currentUser.email,
+        message: "Telah menambahkan laporan piutang",
+        time: this.date.toLocaleTimeString(),
+        date: this.date.toLocaleDateString(),
+      };
+
+      return db.push(data);
     },
     insertData() {
       const db = firebase.database().ref("piutang");
@@ -246,6 +260,8 @@ export default {
       this.piutang = [];
 
       db.push(data);
+      this.notifications();
+      this.showNotification();
 
       swal({
         title: "Selamat",
@@ -255,6 +271,16 @@ export default {
       });
 
       this.$router.push({ name: "Piutang" });
+    },
+    //munculin notifikasi di windows
+    showNotification() {
+      const notification = new Notification(firebase.auth().currentUser.email, {
+        body: "Telah menambahkan laporan piutang " + this.date.toLocaleString(),
+      });
+
+      notification.onclick = () => {
+        this.$router.push({ name: "HistoryNotification" });
+      };
     },
   },
 };

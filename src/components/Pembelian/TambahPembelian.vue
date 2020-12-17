@@ -91,21 +91,12 @@
                     <div class="mb-3 row">
                       <label class="col-sm-2 col-form-label">Harga Beli</label>
                       <div class="col-sm-10">
-                        <select
+                        <input
+                          type="number"
                           class="form-control"
-                          aria-label="Default select example"
+                          required
                           v-model="pembelian.harga_beli"
-                        >
-                          <option value="HargaBeli1">HargaBeli1</option>
-                          <option value="HargaBeli1">HargaBeli1</option>
-                          <option value="HargaBeli1">HargaBeli1</option>
-                          <option value="HargaBeli1">HargaBeli1</option>
-                          <option value="HargaBeli1">HargaBeli1</option>
-                          <option value="HargaBeli1">HargaBeli1</option>
-                          <option value="HargaBeli1">HargaBeli1</option>
-                          <option value="HargaBeli1">HargaBeli1</option>
-                          <option value="HargaBeli1">HargaBeli1</option>
-                        </select>
+                        />
                       </div>
                     </div>
                     <div class="mb-3 row">
@@ -180,11 +171,24 @@ export default {
   data() {
     return {
       pembelian: [],
+      date: new Date(),
     };
   },
   methods: {
     back() {
       this.$router.back();
+    },
+    notifications() {
+      const db = firebase.database().ref("notifications");
+
+      var data = {
+        user: firebase.auth().currentUser.email,
+        message: "Telah menambahkan laporan pembelian",
+        time: this.date.toLocaleTimeString(),
+        date: this.date.toLocaleDateString(),
+      };
+
+      return db.push(data);
     },
     insertData() {
       const db = firebase.database().ref("pembelian");
@@ -201,9 +205,10 @@ export default {
 
       this.pembelian = [];
 
-      return db.push(data);
+      db.push(data);
+      this.notifications();
+      this.showNotification();
     },
-
     async pressed() {
       swal({
         title: "Selamat",
@@ -213,6 +218,16 @@ export default {
       });
 
       this.$router.push({ name: "Pembelian" });
+    },
+    showNotification() {
+      const notification = new Notification(firebase.auth().currentUser.email, {
+        body:
+          "Telah menambahkan laporan pembelian " + this.date.toLocaleString(),
+      });
+
+      notification.onclick = () => {
+        this.$router.push({ name: "HistoryNotification" });
+      };
     },
   },
 };

@@ -91,21 +91,12 @@
                     <div class="mb-3 row">
                       <label class="col-sm-2 col-form-label">Harga Beli</label>
                       <div class="col-sm-10">
-                        <select
+                        <input
+                          type="number"
                           class="form-control"
-                          aria-label="Default select example"
+                          required
                           v-model="pembelian.harga_beli"
-                        >
-                          <option value="HargaBeli1">HargaBeli1</option>
-                          <option value="HargaBeli1">HargaBeli1</option>
-                          <option value="HargaBeli1">HargaBeli1</option>
-                          <option value="HargaBeli1">HargaBeli1</option>
-                          <option value="HargaBeli1">HargaBeli1</option>
-                          <option value="HargaBeli1">HargaBeli1</option>
-                          <option value="HargaBeli1">HargaBeli1</option>
-                          <option value="HargaBeli1">HargaBeli1</option>
-                          <option value="HargaBeli1">HargaBeli1</option>
-                        </select>
+                        />
                       </div>
                     </div>
                     <div class="mb-3 row">
@@ -197,11 +188,24 @@ export default {
     return {
       id: this.$route.params.id,
       pembelian: {},
+      date: new Date(),
     };
   },
   methods: {
     back() {
       this.$router.back();
+    },
+    notifications() {
+      const db = firebase.database().ref("notifications");
+
+      var data = {
+        user: firebase.auth().currentUser.email,
+        message: "Telah melakukan update laporan pembelian",
+        time: this.date.toLocaleTimeString(),
+        date: this.date.toLocaleDateString(),
+      };
+
+      return db.push(data);
     },
     updateData() {
       const db = firebase.database().ref("pembelian/" + this.id);
@@ -222,8 +226,20 @@ export default {
         icon: "success",
         button: "Ok",
       });
-
+      this.notifications();
       this.$router.push({ name: "Pembelian" });
+      this.showNotification();
+    },
+    showNotification() {
+      const notification = new Notification(firebase.auth().currentUser.email, {
+        body:
+          "Telah melakukan update laporan pembelian " +
+          this.date.toLocaleString(),
+      });
+
+      notification.onclick = () => {
+        this.$router.push({ name: "HistoryNotification" });
+      };
     },
   },
 };

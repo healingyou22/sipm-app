@@ -57,15 +57,14 @@
                           aria-label="Default select example"
                           v-model="warehouse.unit_warna"
                         >
-                          <option value="Warna1">Warna1</option>
-                          <option value="Warna1">Warna1</option>
-                          <option value="Warna1">Warna1</option>
-                          <option value="Warna1">Warna1</option>
-                          <option value="Warna1">Warna1</option>
-                          <option value="Warna1">Warna1</option>
-                          <option value="Warna1">Warna1</option>
-                          <option value="Warna1">Warna1</option>
-                          <option value="Warna1">Warna1</option>
+                          <option value="SILVER">SILVER</option>
+                          <option value="MERAH HITAM">MERAH HITAM</option>
+                          <option value="BIRU HITAM">BIRU HITAM</option>
+                          <option value="PUTIH BIRU">PUTIH BIRU</option>
+                          <option value="BIRU">BIRU</option>
+                          <option value="HITAM KUNING">HITAM KUNING</option>
+                          <option value="HITAM">HITAM</option>
+                          <option value="MERAH">MERAH</option>
                         </select>
                       </div>
                     </div>
@@ -216,11 +215,24 @@ export default {
     return {
       id: this.$route.params.id,
       warehouse: {},
+      date: new Date(),
     };
   },
   methods: {
     back() {
       this.$router.back();
+    },
+    notifications() {
+      const db = firebase.database().ref("notifications");
+
+      var data = {
+        user: firebase.auth().currentUser.email,
+        message: "Telah melakukan update laporan unit",
+        time: this.date.toLocaleTimeString(),
+        date: this.date.toLocaleDateString(),
+      };
+
+      return db.push(data);
     },
     updateData() {
       const db = firebase.database().ref("warehouse/" + this.id);
@@ -244,7 +256,19 @@ export default {
         button: "Ok",
       });
 
+      this.notifications();
       this.$router.push({ name: "Warehouse" });
+      this.showNotification();
+    },
+    showNotification() {
+      const notification = new Notification(firebase.auth().currentUser.email, {
+        body:
+          "Telah melakukan update laporan unit " + this.date.toLocaleString(),
+      });
+
+      notification.onclick = () => {
+        this.$router.push({ name: "HistoryNotification" });
+      };
     },
   },
 };
